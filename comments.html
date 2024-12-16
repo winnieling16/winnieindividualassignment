@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Winnie Personal Page Development</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="global.js" defer></script>
+	<style>	
+		.commentSection{
+			flex: 1;
+			align-items: center;
+			padding: 150px 520px;
+			max-width: 500px;
+			margin: 0;
+		}
+		
+		.container {
+			background: #fff;
+			padding: 20px;
+			font-family: Consolas, "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", Monaco, "Courier New", monospace;
+			width: 500px;
+			box-shadow: 0 0 5px #000;
+			text-align: center;
+			border-radius: 8px;
+		}
+		
+		.head {
+			text-transform: uppercase;
+			margin-bottom: 20px;
+		}
+		
+		.text {
+			margin: 10px 0;
+			font-family: Constantia, "Lucida Bright", "DejaVu Serif", Georgia, serif;
+			font-size: 0.9em;
+		}
+		
+		.commentbox {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 20px;
+			padding: 10px;
+		}
+		
+		.commentbox > img {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			object-fit: cover;
+			object-position: center;
+		}
+		
+		.content3 {
+			width: 100%;
+		}
+		
+		.user {
+			border: none;
+			outline: none;
+			margin: 5px 0;
+			color: #808080;
+			padding: 10px;
+			width: 100%;
+		}
+		
+		.commentinput > input {
+			border: none;
+			padding: 10px;
+			outline: none;
+			border-bottom: 2px solid blue;
+			margin-bottom: 10px;
+			width: 100%;
+		}
+		
+		.buttons {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			color: #808080;
+			margin-top: 10px;
+		}
+		
+		.buttons button {
+			padding: 5px 10px;
+			background: #C0C0C0;
+			color: #808080;
+			text-transform: uppercase;
+			border: none;
+			outline: none;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		
+		.buttons button.abled {
+			background: blue;
+			color: #fff;
+		}
+		
+		.noify {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+		}
+		
+		.parents {
+			font-family: Arial, Cambria, "Hoefler Text", "Liberation Serif", Times, "Times New Roman", serif;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+		
+		.parents h1 {
+			font-size: 0.9em;
+			margin-bottom: 5px;
+		}
+		
+		.parents p {
+			margin: 10px 0;
+			font-size: 0.9em;
+		}
+		
+		.parents > img {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			object-fit: cover;
+			object-position: center;
+		}
+		
+		.engagements {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+		}
+		
+		.engagements img {
+			width: 20px;
+		}
+		
+		.engagements img:nth-child(1) {
+			margin-right: 10px;
+			width: 25px;
+		}
+		
+		.date {
+			color: #808080;
+			font-size: 0.8em;
+		}
+		
+		.delete-btn {
+			background: red;
+			color: white;
+			border: none;
+			padding: 5px;
+			border-radius: 3px;
+			cursor: pointer;
+			font-size: 0.8em;
+		}
+	</style>
+</head>
+<body data-page-title="Comments">
+	<div id="globalHeader"></div>
+	<div class="commentSection">
+	<div class="container">
+		<div class="head"><h1>Comments</h1></div>
+		<div class="text"><p>I am happy to hear from you!</p></div>
+		<div class="comments" style="padding: 10px;"></div>
+		<div class="commentbox">
+			<img src="user.png" alt="User">
+			<div class="content3">
+				<h2>Comment as:</h2>
+				<input type="text" value="Anonymous" class="user">
+				<div class="commentinput">
+					<input type="text" placeholder="Enter comment" class="usercomment">
+					<div class="buttons">
+						<button type="submit" disabled id="publish">Publish</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<div id="globalFooter"></div>
+	<script>
+		"use strict";
+		
+		const userComment = document.querySelector(".usercomment");
+		const publishBtn = document.querySelector("#publish");
+		const comments = document.querySelector(".comments");
+		const userName = document.querySelector(".user");
+		
+		// Load comments from localStorage
+		function loadComments() {
+			const savedComments = JSON.parse(localStorage.getItem("comments")) || [];
+			comments.innerHTML = "";
+			savedComments.forEach((comment, index) => {
+				addCommentToDOM(comment, index);
+			});
+		}
+
+		// Save comments to localStorage
+		function saveComment(comment) {
+			const savedComments = JSON.parse(localStorage.getItem("comments")) || [];
+			savedComments.push(comment);
+			localStorage.setItem("comments", JSON.stringify(savedComments));
+		}
+
+		// Delete comment from localStorage
+		function deleteComment(index) {
+			const savedComments = JSON.parse(localStorage.getItem("comments")) || [];
+			savedComments.splice(index, 1);
+			localStorage.setItem("comments", JSON.stringify(savedComments));
+			loadComments();
+		}
+
+		// Add comment to DOM
+		function addCommentToDOM(comment, index) {
+			const commentHTML = `
+				<div class="parents" data-index="${index}">
+					<img src="${comment.image}" alt="User">
+					<div>
+						<h1>${comment.name}</h1>
+						<p>${comment.message}</p>
+						<span class="date">${comment.date}</span>
+					</div>
+					<button class="delete-btn" onclick="deleteComment(${index})">Delete</button>
+				</div>
+			`;
+			comments.innerHTML += commentHTML;
+		}
+
+		userComment.addEventListener("input", () => {
+			if (!userComment.value) {
+				publishBtn.setAttribute("disabled", "disabled");
+				publishBtn.classList.remove("abled");
+			} else {
+				publishBtn.removeAttribute("disabled");
+				publishBtn.classList.add("abled");
+			}
+		});
+		
+		function addPost() {
+			if (!userComment.value) return;
+			const comment = {
+				name: userName.value,
+				image: userName.value === "Anonymous" ? "user.png" : "user.png",
+				message: userComment.value,
+				date: new Date().toLocaleString()
+			};
+			saveComment(comment);
+			addCommentToDOM(comment, JSON.parse(localStorage.getItem("comments")).length - 1);
+			userComment.value = "";
+			publishBtn.setAttribute("disabled", "disabled");
+			publishBtn.classList.remove("abled");
+		}
+		
+		publishBtn.addEventListener("click", addPost);
+		
+		// Load comments on page load
+		loadComments();
+	</script>
+</body>
+</html>
